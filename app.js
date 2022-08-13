@@ -66,3 +66,4 @@ sequelize.sync()
       console.log(`Express server is listening on port ${server.address().port}`);
   });
 });
+

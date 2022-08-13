@@ -3,8 +3,7 @@
 const express = require('express');
 const { User, Course } = require('./models');
 const { asyncHandler } = require('./middleware/async-handler');
-const e = require('express');
-//const { authenticateUser } = require('./middleware/auth-user');
+const { authenticateUser } = require('./middleware/auth-user');
 
 //Router instance
 const router = express.Router();
@@ -12,8 +11,8 @@ const router = express.Router();
 /*********** Users Routes ***********/
 
 // GET /api/users route that returns all properties and values for the currently authenticated User with HTTP status code 200
-// .currentUser is from authenticateUser, can't test yet
-router.get('/users', asyncHandler(async(req,res) => {
+// WORKING
+router.get('/users', authenticateUser, asyncHandler(async(req,res) => {
     const user = req.currentUser;
     
     res.status(200).json({
@@ -24,11 +23,11 @@ router.get('/users', asyncHandler(async(req,res) => {
 }));
 
 // POST /api/users route that will create a new user, set the Location header to "/", and return HTTP status code 201 with no content
-// working? Looking in db, fields were empty?
+// NOT WORKING, GETTING 400 ERROR, POSTMAN "The request cannot be fulfilled due to bad syntax."
 router.post('/users', asyncHandler(async(req, res) => {
-    try{
+    try {
         await User.create(req.body);
-        res.status(201).location('/').json({ "message": "Account successfully created." }); //replace with .end() instead of .json() after testing
+        res.status(201).location('/').end(); 
     } catch(error){
         if(error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError'){
             const errors = error.errors.map(err => err.message);
@@ -82,9 +81,9 @@ router.get('/courses/:id', asyncHandler(async(req,res) => {
 }));
 
 // POST /api/courses route that will create a new course, set the Location header to the URI for the newly created course, and return HTTP status code 201 with no content.
-// NOT WORKING "SQLITE_CONSTRAINT: FOREIGN KEY constraint failed" error
+// NOT WORKING, GETTING 400 ERROR, POSTMAN "The request cannot be fulfilled due to bad syntax."
 
-router.post('/courses', asyncHandler(async(req,res) => {
+router.post('/courses', authenticateUser, asyncHandler(async(req,res) => {
     try{
         const course = await Course.create(req.body);
         res.status(201).location(`/courses/${course.id}`).json({ "message": "Course successfully created." }); //replace with .end() instead of .json() after testing
@@ -99,8 +98,8 @@ router.post('/courses', asyncHandler(async(req,res) => {
 }));
 
 // PUT /api/courses/:id route that will update the corresponding course and return a 204 HTTP status code and no content.
-//HAVEN'T TESTED, NEED ADD NEW COURSE TO WORK
-router.put('/courses/:id', asyncHandler(async(req, res) => {
+//NOT WORKING? Don't see updated text in db, but returns 204 status
+router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     let course;
     try{
         course = await Course.findByPk(req.params.id);
@@ -120,8 +119,8 @@ router.put('/courses/:id', asyncHandler(async(req, res) => {
     }
 }));
 // DELETE /api/courses/:id route that will delete the corresponding course and return HTTP status code 204 with no content.
-//HAVEN'T TESTED, NEED ADD NEW COURSE TO WORK
-router.delete('/courses/:id', asyncHandler(async(req,res) => {
+//WORKS, deleted course 4
+router.delete('/courses/:id', authenticateUser, asyncHandler(async(req,res) => {
     const course = await Course.findByPk(req.params.id);
     if(course){
         await course.destroy();
@@ -131,4 +130,9 @@ router.delete('/courses/:id', asyncHandler(async(req,res) => {
     }
 }));
 
+/**
+ * Need to add: Update the /api/courses/:id PUT and /api/courses/:id DELETE routes to ensure that the currently authenticated user is the owner of the requested course.
+If the currently authenticated user is not the owner of the requested course a 403 HTTP status code should be returned.
+
+ */
 module.exports = router;

@@ -1,6 +1,6 @@
 'use strict';
-const bcrypt = require('bcryptjs/dist/bcrypt');
 const { Model, DataTypes } = require('sequelize');
+const bcrypt = require('bcrypt');
 
 module.exports = (sequelize) => {
     class User extends Model {}
@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
                 notEmpty: {
                     msg: 'Please provide a first name'
                 }
-            }
+            },
         },
         lastName: {
             type: DataTypes.STRING,
@@ -76,6 +76,7 @@ module.exports = (sequelize) => {
             as: 'user',
             foreignKey: {
                 fieldName: 'userID',
+                allowNull: false,
             },
         });
     };
