@@ -80,7 +80,7 @@ router.get('/courses/:id', asyncHandler(async(req,res) => {
 router.post('/courses', authenticateUser, asyncHandler(async(req,res) => {
     try{
         const course = await Course.create(req.body);
-        res.status(201).location(`/courses/${course.id}`).json({ "message": "Course successfully created." }); //replace with .end() instead of .json() after testing
+        res.status(201).location(`/courses/${course.id}`).end();
     } catch(error){
         if(error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError'){
             const errors = error.errors.map(err => err.message);
@@ -98,7 +98,7 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
         course = await Course.findByPk(req.params.id);
         if(course){
             await course.update(req.body);
-            res.status(204).json({ "message": "Course successfully updated." }); //replace with .end() instead of .json() after testing
+            res.status(204).end();
         } else {
             res.status(404).json({ message: "Course not found" });
         }
@@ -116,7 +116,7 @@ router.delete('/courses/:id', authenticateUser, asyncHandler(async(req,res) => {
     const course = await Course.findByPk(req.params.id);
     if(course){
         await course.destroy();
-        res.status(204).json({ "message": "Course successfully deleted. "}); //replace with .end() instead of .json() after testing
+        res.status(204).end(); 
     } else {
         res.status(404).json({ message: "Course not found" });
     }
