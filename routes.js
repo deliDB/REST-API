@@ -11,7 +11,6 @@ const router = express.Router();
 /*********** Users Routes ***********/
 
 // GET /api/users route that returns all properties and values for the currently authenticated User with HTTP status code 200
-// WORKING
 router.get('/users', authenticateUser, asyncHandler(async(req,res) => {
     const user = req.currentUser;
     
@@ -23,7 +22,6 @@ router.get('/users', authenticateUser, asyncHandler(async(req,res) => {
 }));
 
 // POST /api/users route that will create a new user, set the Location header to "/", and return HTTP status code 201 with no content
-// NOT WORKING, GETTING 400 ERROR, POSTMAN "The request cannot be fulfilled due to bad syntax."
 router.post('/users', asyncHandler(async(req, res) => {
     try {
         await User.create(req.body);
@@ -41,7 +39,6 @@ router.post('/users', asyncHandler(async(req, res) => {
 /*********** Courses Routes ***********/
 
 // GET /api/courses route that returns all courses including the User associated with each course and HTTP status code 200
-// WORKING
 router.get('/courses', asyncHandler(async(req,res) => {
     const courses = await Course.findAll({
         attributes: {
@@ -59,7 +56,6 @@ router.get('/courses', asyncHandler(async(req,res) => {
 }));
 
 // GET /api/courses/:id route that will return the corresponding course including the User associated with that course and HTTP status code 200
-// WORKING
 router.get('/courses/:id', asyncHandler(async(req,res) => {
     const course = await Course.findByPk(req.params.id, {
         attributes: {
@@ -81,8 +77,6 @@ router.get('/courses/:id', asyncHandler(async(req,res) => {
 }));
 
 // POST /api/courses route that will create a new course, set the Location header to the URI for the newly created course, and return HTTP status code 201 with no content.
-// NOT WORKING, GETTING 400 ERROR, POSTMAN "The request cannot be fulfilled due to bad syntax."
-
 router.post('/courses', authenticateUser, asyncHandler(async(req,res) => {
     try{
         const course = await Course.create(req.body);
@@ -98,7 +92,6 @@ router.post('/courses', authenticateUser, asyncHandler(async(req,res) => {
 }));
 
 // PUT /api/courses/:id route that will update the corresponding course and return a 204 HTTP status code and no content.
-//NOT WORKING? Don't see updated text in db, but returns 204 status
 router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     let course;
     try{
@@ -119,7 +112,6 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     }
 }));
 // DELETE /api/courses/:id route that will delete the corresponding course and return HTTP status code 204 with no content.
-//WORKS, deleted course 4
 router.delete('/courses/:id', authenticateUser, asyncHandler(async(req,res) => {
     const course = await Course.findByPk(req.params.id);
     if(course){
