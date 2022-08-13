@@ -46,7 +46,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// set our port
+// Set our port
 app.set('port', process.env.PORT || 5000);
 
 //Test database connection
@@ -59,7 +59,10 @@ app.set('port', process.env.PORT || 5000);
   }
 })();
 
-// start listening on our port
-const server = app.listen(app.get('port'), () => {
-  console.log(`Express server is listening on port ${server.address().port}`);
+// Synchronize models with database, then start listening on our port
+sequelize.sync()
+  .then( () => {
+    const server = app.listen(app.get('port'), () => {
+      console.log(`Express server is listening on port ${server.address().port}`);
+  });
 });
