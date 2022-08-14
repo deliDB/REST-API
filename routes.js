@@ -133,11 +133,4 @@ router.delete('/courses/:id', authenticateUser, asyncHandler(async(req,res) => {
    
 }));
 
-
-
-/**
- * Need to add: Update the /api/courses/:id PUT and /api/courses/:id DELETE routes to ensure that the currently authenticated user is the owner of the requested course.
-If the currently authenticated user is not the owner of the requested course a 403 HTTP status code should be returned.
-
- */
 module.exports = router;
