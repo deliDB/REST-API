@@ -97,8 +97,13 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     try{
         course = await Course.findByPk(req.params.id);
         if(course){
-            await course.update(req.body);
-            res.status(204).end();
+            // If currently authenticated user is the owner of the requested course, update course
+            if(course.userId === req.currentUser.id){
+                await course.update(req.body);
+                res.status(204).end();
+            } else {
+                res.status(403).json({ "message": "You don't have permission to update this course."})
+            }  
         } else {
             res.status(404).json({ message: "Course not found" });
         }
@@ -114,13 +119,21 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
 // DELETE /api/courses/:id route that will delete the corresponding course and return HTTP status code 204 with no content.
 router.delete('/courses/:id', authenticateUser, asyncHandler(async(req,res) => {
     const course = await Course.findByPk(req.params.id);
-    if(course){
-        await course.destroy();
-        res.status(204).end(); 
-    } else {
-        res.status(404).json({ message: "Course not found" });
-    }
+        if(course){
+            // If currently authenticated user is the owner of the requested course, delete course
+            if(course.userId === req.currentUser.id){
+                await course.destroy();
+                res.status(204).end(); 
+            } else {
+                res.status(403).json({ "message": "You don't have permission to delete this course."})
+            }
+        } else {
+            res.status(404).json({ message: "Course not found" });
+        }
+   
 }));
+
+
 
 /**
  * Need to add: Update the /api/courses/:id PUT and /api/courses/:id DELETE routes to ensure that the currently authenticated user is the owner of the requested course.

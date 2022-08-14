@@ -36,4 +36,5 @@ exports.authenticateUser = async(req, res, next) => {
 };
 /**
  * Source code: REST API Authentication with Express module
+ * https://teamtreehouse.com/library/rest-api-authentication-with-express-2
  */
